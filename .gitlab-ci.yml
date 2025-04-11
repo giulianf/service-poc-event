@@ -1,0 +1,42 @@
+# Define the image to be used for the CI pipeline
+image: maven:3.8.5-jdk-21
+
+# Define cache to speed up the build process
+cache:
+  paths:
+    - .m2/repository
+# Define stages of the pipeline
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+# Build stage
+build:
+  stage: build
+  script:
+    - mvn clean compile
+  only:
+    - branches
+
+# Test stage
+test:
+  stage: test
+  script:
+    - mvn test
+  only:
+    - branches
+
+# Package stage
+package:
+  stage: package
+  script:
+    - mvn package
+  artifacts:
+    paths:
+      - target/*.jar
+  only:
+    - branches
+
+# Deploy stage (to an environment, e.g., production or staging)

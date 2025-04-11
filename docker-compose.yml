@@ -1,0 +1,56 @@
+services:
+  service-poc-event-db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - my-network
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"  # Kafka broker port
+      - "9093:9093"  # Controller port
+    environment:
+      # KRaft mode (No Zookeeper)
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+      # Storage and replication settings
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: "false"
+    entrypoint: >
+      sh -c "
+      if [ ! -f /var/lib/kafka/data/meta.properties ]; then
+        kafka-storage format --cluster-id 7gf47f8a-1234-5678-9876-a5b6c7d8e9f0 --ignore-formatted --config /etc/kafka/kraft/server.properties;
+      fi;
+      exec kafka-server-start /etc/kafka/kraft/server.properties
+      "
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - my-network
+volumes:
+  postgres_data:
+  kafka_data:
+networks:
+  my-network:
+    driver: bridge

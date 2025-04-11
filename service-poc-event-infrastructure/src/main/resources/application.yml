@@ -1,0 +1,68 @@
+# Generic environment independent configuration
+
+server:
+  compression:
+    enabled: true
+  port: 9060
+spring:
+  application:
+    name: service-poc-event
+  cloud:
+    config:
+      import-check:
+        enabled: false
+      #      fail-fast: true # true, if you want your service to fail and retry if config server is not available yet to connect.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+      defer-datasource-initialization: true #remove for liquibase
+  #  liquibase:
+  #    change-log: classpath:/db/changelog/db.changelog-master.yaml
+  sql:
+    init:
+      data-locations: classpath:seed-data.sql
+      mode: never
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+
+# Template file for environment dependent configuration
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: person-group
+      auto-offset-reset: latest
+      enable-auto-commit: false
+      properties:
+        isolation.level: read_committed
+      max-poll-records: 10
+      retries: 53
+      retry.backoff.ms: 5000
+    producer:
+      retries: 3
+      acks: all
+      properties:
+        enable.idempotence: true
+    listener:
+      ack-mode: manual_immediate
+    topics:
+      person-response: person-response
+      person-response-dlt: person-response-dlt
+      update-address: update-address
+      update-address-dlt: update-address-dlt
+
+
+
