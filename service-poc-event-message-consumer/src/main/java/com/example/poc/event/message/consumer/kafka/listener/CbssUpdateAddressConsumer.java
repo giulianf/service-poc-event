@@ -17,6 +17,6 @@ public class CbssUpdateAddressConsumer {
     @Transactional
     public void handleCbssResponse(PersonDto response) {
         // ✅ Forward to Application Layer (No event publishing here)
-        personApplicationService.processUpdateAddressInterlocutor(response);
+        personApplicationService.processUpdateAddressPerson(response);
     }
 }

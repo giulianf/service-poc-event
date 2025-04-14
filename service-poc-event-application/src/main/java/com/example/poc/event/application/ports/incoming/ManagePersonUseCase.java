@@ -11,5 +11,5 @@ public interface ManagePersonUseCase {
 
     PersonDto getPersonByCarteNb(Long carteNb);
 
-    void processUpdateAddressInterlocutor(PersonDto response);
+    void processUpdateAddressPerson(PersonDto response);
 }

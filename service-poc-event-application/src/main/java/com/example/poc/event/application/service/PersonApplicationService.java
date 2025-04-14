@@ -32,11 +32,11 @@ public class PersonApplicationService implements ManagePersonUseCase {
 
     public PersonDto getPersonByCarteNb(Long carteNb) {
         return personRepository.findByCarteNb(carteNb);
-//        return personDomainService.getInterlocutorsByProperty(personId, lang);
+//        return personDomainService.getPersonsByProperty(personId, lang);
     }
 
     @Override
-    public void processUpdateAddressInterlocutor(PersonDto response) {
+    public void processUpdateAddressPerson(PersonDto response) {
         // address saved
 //        personRepository.save();
     }

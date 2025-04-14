@@ -5,9 +5,7 @@ import com.example.poc.event.application.ports.incoming.ManagePersonUseCase;
 import com.example.poc.event.domain.dto.PersonDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 @RestController
@@ -19,11 +17,11 @@ public class ServicePocDeferController {
 
     @RequestMapping(
             method = {RequestMethod.GET},
-            value = {"/properties/{propertyId}/interlocutor"},
+            value = {"/person/{personId}"},
             produces = {"application/json", "application/problem+json"}
     )
-    public DeferredResult<PersonDto> getPersonByProperty(Long personId, Long carteNumber) {
-        log.debug("controller -> get interlocutor for property ID {}", personId);
+    public DeferredResult<PersonDto> getPersonByProperty(@PathVariable("personId") Long personId, @RequestParam("carteNumber") Long carteNumber) {
+        log.debug("controller -> get Person for ID {}", personId);
         DeferredResult<PersonDto> deferredResult = new DeferredResult<>(10000L);
         String requestId = personId + "-" + carteNumber;
         // ✅ Register DeferredResult in Event Listener
